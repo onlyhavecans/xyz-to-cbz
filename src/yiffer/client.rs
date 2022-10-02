@@ -34,8 +34,7 @@ impl YifferClient {
 
         let title = Locator::Css("h1.loadedComicHeader");
 
-        let t = c.wait().for_element(title).await?;
-        println!("{:?}", t);
+        let _ = c.wait().for_element(title).await?;
         let text = c.source().await?;
         c.close_window().await?;
         Ok(text)

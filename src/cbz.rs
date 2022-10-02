@@ -1,4 +1,5 @@
 use crate::yiffer::YifferComic;
+use log::info;
 use reqwest::Client;
 use std::fs::{self, File};
 use std::io::Write;
@@ -33,7 +34,7 @@ impl Cbz {
         if let Err(e) = write_file(&file, self.urls, &client).await {
             // Ignore removal error
             let _ = fs::remove_file(file);
-            eprintln!("Failed to write file: {}", e);
+            return Err(e.context("Failed to write file"));
         }
 
         Ok(())
@@ -50,8 +51,8 @@ fn sanitize_name(s: &str) -> String {
 
 fn comic_file(base_dir: &str, name: &str, artist: &str) -> PathBuf {
     let base = PathBuf::from(base_dir);
-    let comic_folder = format!("{} by {}", name, artist);
-    let cbz = format!("{}.cbz", name);
+    let comic_folder = name.to_string();
+    let cbz = format!("{} by {}.cbz", name, artist);
     base.join(comic_folder).join(cbz)
 }
 
@@ -63,9 +64,12 @@ fn filename_from_url(url: &Url) -> String {
 
 async fn write_file(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::Result<()> {
     // Make the dir
-    fs::create_dir_all(file.parent().unwrap())?;
+    let parent = file.parent().unwrap();
+    info!("creating directories {}", parent.display());
+    fs::create_dir_all(parent)?;
 
     //Set up the zipfile
+    info!("creating zip {}", file.display());
     let file = File::create(&file)?;
     let mut zip = ZipWriter::new(file);
     let options = FileOptions::default();
@@ -76,6 +80,8 @@ async fn write_file(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::
 
         let res = client.get(url).send().await?;
         let bytes = res.bytes().await?;
+
+        info!("writing to zip {}", filename);
         zip.start_file(filename, options)?;
         zip.write_all(&bytes)?;
     }
