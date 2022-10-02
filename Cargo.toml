@@ -14,6 +14,7 @@ reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"
 scraper = "0.13"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 url = "2.3"
+zip = { version = "0.6.2", default-features = false, features = ["deflate"] }
 
 [dev-dependencies]
 wiremock = "0.5"
