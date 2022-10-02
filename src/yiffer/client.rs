@@ -1,9 +1,7 @@
-use derive_builder::Builder;
 use fantoccini::{ClientBuilder, Locator};
 use url::Url;
 
-#[derive(Debug, Builder, Clone)]
-#[builder(setter(into), default)]
+#[derive(Debug, Clone)]
 pub struct YifferClient {
     base_url: String,
 }
@@ -20,14 +18,8 @@ impl Default for YifferClient {
 }
 
 impl YifferClient {
-    pub fn new() -> Self {
-        Self {
-            ..Default::default()
-        }
-    }
-
-    pub fn builder() -> YifferClientBuilder {
-        YifferClientBuilder::default()
+    pub fn new(base_url: String) -> Self {
+        Self { base_url }
     }
 
     pub fn comic_url(&self, name: &str) -> Result<Url, url::ParseError> {
@@ -45,6 +37,7 @@ impl YifferClient {
         let t = c.wait().for_element(title).await?;
         println!("{:?}", t);
         let text = c.source().await?;
+        c.close_window().await?;
         Ok(text)
     }
 }
@@ -70,18 +63,19 @@ mod test {
     #[tokio::test]
     async fn request_page() {
         let body = std::fs::read_to_string("test/Kissy Cousin - Yiffer.html").unwrap();
-
+        let response = ResponseTemplate::new(200).set_body_raw(body, "text/html");
         let mock_server = MockServer::start().await;
         Mock::given(method("GET"))
             .and(path("/hello"))
-            .respond_with(ResponseTemplate::new(200).set_body_string(&body))
+            .respond_with(response)
             .expect(1)
             .mount(&mock_server)
             .await;
 
         let uri = mock_server.uri();
-        let client = YifferClient::builder().base_url(uri).build().unwrap();
+        let client = YifferClient::new(uri);
         let document = client.comic_page("hello").await.unwrap();
-        assert_eq!(document, body);
+
+        assert!(document.contains("Kissy Cousin page 42"));
     }
 }
