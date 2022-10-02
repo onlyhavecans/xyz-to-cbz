@@ -1,4 +1,4 @@
-use log::{error, info};
+use log::error;
 use std::process;
 use yiffer_xyz_to_cbz::run;
 use yiffer_xyz_to_cbz::Cli;
@@ -11,9 +11,7 @@ async fn main() {
     let comic = cli.comic;
 
     if let Err(e) = run(comic).await {
-        error!("Application Error: {}", e);
+        error!("application error: {}", e);
         process::exit(1);
     }
-
-    info!("Done!");
 }

@@ -65,11 +65,11 @@ fn filename_from_url(url: &Url) -> String {
 async fn write_file(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::Result<()> {
     // Make the dir
     let parent = file.parent().unwrap();
-    info!("creating directories {}", parent.display());
+    info!("creating directories: {}", parent.display());
     fs::create_dir_all(parent)?;
 
     //Set up the zipfile
-    info!("creating zip {}", file.display());
+    info!("creating file: {}", file.display());
     let file = File::create(&file)?;
     let mut zip = ZipWriter::new(file);
     let options = FileOptions::default();
@@ -81,7 +81,7 @@ async fn write_file(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::
         let res = client.get(url).send().await?;
         let bytes = res.bytes().await?;
 
-        info!("writing to zip {}", filename);
+        info!("writing to zip: {}", filename);
         zip.start_file(filename, options)?;
         zip.write_all(&bytes)?;
     }
