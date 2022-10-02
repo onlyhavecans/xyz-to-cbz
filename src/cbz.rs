@@ -9,14 +9,16 @@ use zip::ZipWriter;
 
 pub struct Cbz {
     name: String,
+    artist: String,
     urls: Vec<Url>,
 }
 
 impl Cbz {
     pub fn from(comic: YifferComic) -> Self {
         let name = sanitize_name(&comic.name);
+        let artist = comic.artist;
         let urls = comic.pages;
-        Self { name, urls }
+        Self { name, artist, urls }
     }
 
     pub async fn write(self, directory: Option<String>) -> anyhow::Result<()> {
@@ -24,7 +26,7 @@ impl Cbz {
             Some(d) => d,
             None => "comics".into(),
         };
-        let file = comic_file(&base_dir, &self.name);
+        let file = comic_file(&base_dir, &self.name, &self.artist);
 
         let client = Client::new();
 
@@ -46,10 +48,11 @@ fn sanitize_name(s: &str) -> String {
         .replace("  ", " ")
 }
 
-fn comic_file(base_dir: &str, name: &str) -> PathBuf {
+fn comic_file(base_dir: &str, name: &str, artist: &str) -> PathBuf {
     let base = PathBuf::from(base_dir);
+    let comic_folder = format!("{} by {}", name, artist);
     let cbz = format!("{}.cbz", name);
-    base.join(name).join(cbz)
+    base.join(comic_folder).join(cbz)
 }
 
 fn filename_from_url(url: &Url) -> String {

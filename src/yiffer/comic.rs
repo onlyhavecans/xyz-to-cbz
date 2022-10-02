@@ -1,39 +1,51 @@
 use anyhow::anyhow;
 use itertools::Itertools;
+use scraper::{Html, Selector};
 use url::Url;
 
 #[derive(Debug)]
 pub struct YifferComic {
     pub name: String,
+    pub artist: String,
     pub pages: Vec<Url>,
 }
 
 impl YifferComic {
     pub fn parse(body: &str) -> anyhow::Result<Self> {
-        let document = scraper::Html::parse_document(body);
+        let document = Html::parse_document(body);
 
         // Pull the title
-        let title_selector = scraper::Selector::parse("h1.loadedComicHeader").unwrap();
-        let title: Vec<String> = document
+        let title_selector = Selector::parse("h1.loadedComicHeader").unwrap();
+        let name = document
             .select(&title_selector)
             .map(|x| x.inner_html())
             .unique()
-            .collect();
-        let name = title
-            .first()
+            .next()
             .ok_or_else(|| anyhow!("Comic Title Not Found"))?;
 
+        // Pull the author
+        let artist_selector = Selector::parse("a.artistNameLink").unwrap();
+        let artist = document
+            .select(&artist_selector)
+            .map(|x| x.inner_html())
+            .unique()
+            .next()
+            .ok_or_else(|| anyhow!("Comic Artist Not Found"))?
+            .trim()
+            .into();
+
         // Pull the pages
-        let page_selector = scraper::Selector::parse("img.comic-page").unwrap();
+        let page_selector = Selector::parse("img.comic-page").unwrap();
         let pages: Vec<Url> = document
             .select(&page_selector)
             .filter_map(|x| x.value().attr("src"))
-            .unique()
             .filter_map(|x| Url::parse(x).ok())
+            .unique()
             .collect();
 
         let comic = YifferComic {
-            name: name.to_string(),
+            name,
+            artist,
             pages,
         };
         Ok(comic)
@@ -49,6 +61,7 @@ mod test {
         let body = std::fs::read_to_string("test/Kissy Cousin - Yiffer.html").unwrap();
         let comic = YifferComic::parse(&body).unwrap();
         assert_eq!("Kissy Cousin", comic.name);
+        assert_eq!("Kamicheetah", comic.artist);
 
         let pages =
             vec![Url::parse("https://static.yiffer.xyz/comics/Kissy Cousin/001.jpg").unwrap()];
