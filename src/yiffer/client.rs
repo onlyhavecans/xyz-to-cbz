@@ -1,29 +1,27 @@
 use derive_builder::Builder;
-use reqwest::Client;
+use fantoccini::{ClientBuilder, Locator};
 use url::Url;
 
 #[derive(Debug, Builder, Clone)]
 #[builder(setter(into), default)]
 pub struct YifferClient {
-    http_client: Client,
     base_url: String,
 }
 
 const BASE_URL: &str = "https://yiffer.xyz/";
+const GECKODRIVER: &str = "http://localhost:4444";
 
 impl Default for YifferClient {
     fn default() -> Self {
         Self {
-            http_client: Client::new(),
             base_url: BASE_URL.into(),
         }
     }
 }
 
 impl YifferClient {
-    pub fn new(client: Client) -> Self {
+    pub fn new() -> Self {
         Self {
-            http_client: client,
             ..Default::default()
         }
     }
@@ -39,8 +37,14 @@ impl YifferClient {
 
     pub async fn comic_page(&self, name: &str) -> anyhow::Result<String> {
         let url = self.comic_url(name)?;
-        let response = self.http_client.get(url).send().await?;
-        let text = response.text().await?;
+        let c = ClientBuilder::rustls().connect(GECKODRIVER).await?;
+        c.goto(url.as_str()).await?;
+
+        let title = Locator::Css("h1.loadedComicHeader");
+
+        let t = c.wait().for_element(title).await?;
+        println!("{:?}", t);
+        let text = c.source().await?;
         Ok(text)
     }
 }
@@ -65,7 +69,7 @@ mod test {
 
     #[tokio::test]
     async fn request_page() {
-        let body = std::fs::read_to_string("test/Blueberry Jam - Yiffer.html").unwrap();
+        let body = std::fs::read_to_string("test/Kissy Cousin - Yiffer.html").unwrap();
 
         let mock_server = MockServer::start().await;
         Mock::given(method("GET"))
