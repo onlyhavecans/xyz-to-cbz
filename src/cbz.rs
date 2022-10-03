@@ -1,12 +1,12 @@
 use crate::yiffer::YifferComic;
+use async_zip::write::{EntryOptions, ZipFileWriter};
+use async_zip::Compression;
 use log::info;
 use reqwest::Client;
-use std::fs::{self, File};
-use std::io::Write;
+use std::fs;
 use std::path::PathBuf;
+use tokio::fs::File;
 use url::Url;
-use zip::write::FileOptions;
-use zip::ZipWriter;
 
 pub struct Cbz {
     name: String,
@@ -31,7 +31,7 @@ impl Cbz {
 
         let client = Client::new();
 
-        if let Err(e) = write_file(&file, self.urls, &client).await {
+        if let Err(e) = write_cbz(&file, self.urls, &client).await {
             // Ignore removal error
             let _ = fs::remove_file(file);
             return Err(e.context("Failed to write file"));
@@ -62,7 +62,7 @@ fn filename_from_url(url: &Url) -> String {
     name.into()
 }
 
-async fn write_file(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::Result<()> {
+async fn write_cbz(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::Result<()> {
     // Make the dir
     let parent = file.parent().unwrap();
     info!("creating directories: {}", parent.display());
@@ -70,22 +70,29 @@ async fn write_file(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::
 
     //Set up the zipfile
     info!("creating file: {}", file.display());
-    let file = File::create(&file)?;
-    let mut zip = ZipWriter::new(file);
-    let options = FileOptions::default();
+    let mut file = File::create(&file).await?;
+    let mut zip = ZipFileWriter::new(&mut file);
 
-    // Write files in turm
+    // Write files in turn
     for url in urls {
-        let filename = filename_from_url(&url);
-
-        let res = client.get(url).send().await?;
-        let bytes = res.bytes().await?;
-
-        info!("writing to zip: {}", filename);
-        zip.start_file(filename, options)?;
-        zip.write_all(&bytes)?;
+        write_url_to_zip(&mut zip, client, url).await?;
     }
 
-    zip.finish()?;
+    zip.close().await?;
+    Ok(())
+}
+
+async fn write_url_to_zip(
+    zip: &mut ZipFileWriter<&mut File>,
+    client: &Client,
+    url: Url,
+) -> Result<(), anyhow::Error> {
+    let filename = filename_from_url(&url);
+    let res = client.get(url).send().await?;
+    let bytes = res.bytes().await?;
+
+    info!("writing to zip: {}", filename);
+    let options = EntryOptions::new(filename, Compression::Deflate);
+    zip.write_entry_whole(options, &bytes).await?;
     Ok(())
 }

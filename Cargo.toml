@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
+async_zip = {version = "0.0.8", default_features = false, features = ["deflate"] }
 clap = { version = "4.0", features = ["derive"] }
 env_logger = "0.9"
 fantoccini = { version = "0.19", default-features = false, features = ["rustls-tls"] }
@@ -16,7 +17,6 @@ reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"
 scraper = "0.13"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 url = "2.3"
-zip = { version = "0.6.2", default-features = false, features = ["deflate"] }
 
 [dev-dependencies]
 wiremock = "0.5"
