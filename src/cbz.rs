@@ -1,6 +1,6 @@
 use crate::yiffer::YifferComic;
-use async_zip::write::{EntryOptions, ZipFileWriter};
-use async_zip::Compression;
+use async_zip::write::ZipFileWriter;
+use async_zip::{Compression, ZipEntryBuilder};
 use log::info;
 use reqwest::Client;
 use std::fs;
@@ -92,7 +92,7 @@ async fn write_url_to_zip(
     let bytes = res.bytes().await?;
 
     info!("writing to zip: {}", filename);
-    let options = EntryOptions::new(filename, Compression::Deflate);
-    zip.write_entry_whole(options, &bytes).await?;
+    let builder = ZipEntryBuilder::new(filename, Compression::Deflate);
+    zip.write_entry_whole(builder, &bytes).await?;
     Ok(())
 }
