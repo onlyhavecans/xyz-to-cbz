@@ -8,6 +8,7 @@ use std::path::PathBuf;
 use tokio::fs::File;
 use url::Url;
 
+/// Representation of a CBZ file to be written
 pub struct Cbz {
     name: String,
     artist: String,
@@ -15,6 +16,7 @@ pub struct Cbz {
 }
 
 impl Cbz {
+    /// Initalize from a YifferComicStruct
     pub fn from(comic: YifferComic) -> Self {
         let name = sanitize_name(&comic.name);
         let artist = comic.artist;
@@ -22,6 +24,7 @@ impl Cbz {
         Self { name, artist, urls }
     }
 
+    /// Retrieve all of the urls in the Cbz and write it to the passed directory
     pub async fn write(self, directory: Option<String>) -> anyhow::Result<()> {
         let base_dir = match directory {
             Some(d) => d,
@@ -41,6 +44,7 @@ impl Cbz {
     }
 }
 
+/// Sanitize to macOS standards
 fn sanitize_name(s: &str) -> String {
     s.replace(':', "")
         .replace('/', "")
@@ -49,6 +53,7 @@ fn sanitize_name(s: &str) -> String {
         .replace("  ", " ")
 }
 
+/// Generate an output filename
 fn comic_file(base_dir: &str, name: &str, artist: &str) -> PathBuf {
     let base = PathBuf::from(base_dir);
     let comic_folder = name.to_string();
@@ -56,6 +61,8 @@ fn comic_file(base_dir: &str, name: &str, artist: &str) -> PathBuf {
     base.join(comic_folder).join(cbz)
 }
 
+/// Get the filename part of a url.
+/// Panics if the url does not have path segments
 fn filename_from_url(url: &Url) -> String {
     let segs = url.path_segments().unwrap();
     let name = segs.last().unwrap();

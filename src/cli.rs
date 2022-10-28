@@ -1,5 +1,6 @@
 use clap::Parser;
 
+/// The command line agruments passed to the program
 #[derive(clap::Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
@@ -8,6 +9,7 @@ pub struct Cli {
 }
 
 impl Cli {
+    /// Parse command line aguments and return a pupulated struct
     pub fn new() -> Self {
         Self::parse()
     }

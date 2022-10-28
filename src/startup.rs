@@ -2,6 +2,7 @@ use crate::yiffer::{YifferClient, YifferComic};
 use crate::Cbz;
 use log::info;
 
+/// The bulk of run logic
 pub async fn run(comic: String) -> anyhow::Result<()> {
     let client = YifferClient::default();
     info!("aquiring comic page");
