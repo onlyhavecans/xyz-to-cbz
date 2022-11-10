@@ -46,9 +46,7 @@ impl Cbz {
 
 /// Sanitize to macOS standards
 fn sanitize_name(s: &str) -> String {
-    s.replace(':', "")
-        .replace('/', "")
-        .replace('\\', "")
+    s.replace([':', '/', '\\'], "")
         // Keep this last to remove duplicate spaces
         .replace("  ", " ")
 }
