@@ -40,4 +40,4 @@ jobs:
       - name: version
         run: cargo --version
       - name: Run clippy
-        run: cargo clippy -- D warnings
+        run: cargo clippy -- -D warnings
