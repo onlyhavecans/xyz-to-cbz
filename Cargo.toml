@@ -9,7 +9,7 @@ edition = "2021"
 anyhow = "1.0"
 async_zip = {version = "0.0.9", default_features = false, features = ["deflate"] }
 clap = { version = "4.0", features = ["derive"] }
-env_logger = "0.9"
+env_logger = "0.10"
 fantoccini = { version = "0.19", default-features = false, features = ["rustls-tls"] }
 itertools = "0.10"
 log = { version = "0.4", features = ["std"] }
