@@ -1,5 +1,5 @@
 [package]
-name = "yiffer-xyz-to-cbz"
+name = "xyz-to-cbz"
 version = "0.1.0"
 edition = "2021"
 
@@ -15,7 +15,7 @@ itertools = "0.10"
 log = { version = "0.4", features = ["std"] }
 reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"] }
 scraper = "0.14"
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1", features = ["fs", "macros", "rt-multi-thread"] }
 url = "2.3"
 
 [dev-dependencies]
