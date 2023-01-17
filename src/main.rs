@@ -1,7 +1,7 @@
 use log::error;
 use std::process;
-use yiffer_xyz_to_cbz::run;
-use yiffer_xyz_to_cbz::Cli;
+use xyz_to_cbz::run;
+use xyz_to_cbz::Cli;
 
 #[tokio::main]
 async fn main() {
