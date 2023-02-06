@@ -55,7 +55,7 @@ fn sanitize_name(s: &str) -> String {
 fn comic_file(base_dir: &str, name: &str, artist: &str) -> PathBuf {
     let base = PathBuf::from(base_dir);
     let comic_folder = name.to_string();
-    let cbz = format!("{} by {}.cbz", name, artist);
+    let cbz = format!("{name} by {artist}.cbz");
     base.join(comic_folder).join(cbz)
 }
 
