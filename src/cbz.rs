@@ -1,12 +1,12 @@
 use crate::yiffer::YifferComic;
-use async_zip::write::ZipFileWriter;
-use async_zip::{Compression, ZipEntryBuilder};
 use log::info;
 use reqwest::Client;
-use std::fs;
+use std::fs::{self, File};
+use std::io::Write;
 use std::path::PathBuf;
-use tokio::fs::File;
 use url::Url;
+use zip::write::FileOptions;
+use zip::ZipWriter;
 
 /// Representation of a CBZ file to be written
 pub struct Cbz {
@@ -75,29 +75,22 @@ async fn write_cbz(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::R
 
     //Set up the zipfile
     info!("creating file: {}", file.display());
-    let mut file = File::create(&file).await?;
-    let mut zip = ZipFileWriter::new(&mut file);
+    let file = File::create(file)?;
+    let mut zip = ZipWriter::new(file);
+    let options = FileOptions::default();
 
     // Write files in turn
     for url in urls {
-        write_url_to_zip(&mut zip, client, url).await?;
+        let filename = filename_from_url(&url);
+
+        let res = client.get(url).send().await?;
+        let bytes = res.bytes().await?;
+
+        info!("writing to zip: {}", filename);
+        zip.start_file(filename, options)?;
+        zip.write_all(&bytes)?;
     }
 
-    zip.close().await?;
-    Ok(())
-}
-
-async fn write_url_to_zip(
-    zip: &mut ZipFileWriter<&mut File>,
-    client: &Client,
-    url: Url,
-) -> Result<(), anyhow::Error> {
-    let filename = filename_from_url(&url);
-    let res = client.get(url).send().await?;
-    let bytes = res.bytes().await?;
-
-    info!("writing to zip: {}", filename);
-    let builder = ZipEntryBuilder::new(filename, Compression::Deflate);
-    zip.write_entry_whole(builder, &bytes).await?;
+    zip.finish()?;
     Ok(())
 }

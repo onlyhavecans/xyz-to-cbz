@@ -1,13 +1,12 @@
 [package]
 name = "xyz-to-cbz"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 anyhow = "1.0"
-async_zip = {version = "0.0.12", default_features = false, features = ["deflate"] }
 clap = { version = "4.2", features = ["derive"] }
 env_logger = "0.10"
 fantoccini = { version = "0.19", default-features = false, features = ["rustls-tls"] }
@@ -15,8 +14,9 @@ itertools = "0.10"
 log = { version = "0.4", features = ["std"] }
 reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"] }
 scraper = "0.14"
-tokio = { version = "1", features = ["fs", "macros", "rt-multi-thread"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 url = "2.3"
+zip = {version = "0.6", default_features = false, features = ["deflate"] }
 
 [dev-dependencies]
 wiremock = "0.5"
