@@ -19,4 +19,4 @@ url = "2.5"
 zip = {version = "0.6", default_features = false, features = ["deflate"] }
 
 [dev-dependencies]
-wiremock = "0.5"
+wiremock = "0.6"
