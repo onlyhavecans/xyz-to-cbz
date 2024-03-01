@@ -13,7 +13,7 @@ fantoccini = { version = "0.19", default-features = false, features = ["rustls-t
 itertools = "0.12"
 log = { version = "0.4", features = ["std"] }
 reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"] }
-scraper = "0.18"
+scraper = "0.19"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 url = "2.5"
 zip = {version = "0.6", default_features = false, features = ["deflate"] }
