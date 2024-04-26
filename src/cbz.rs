@@ -5,7 +5,7 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::path::PathBuf;
 use url::Url;
-use zip::write::FileOptions;
+use zip::write::SimpleFileOptions;
 use zip::ZipWriter;
 
 /// Representation of a CBZ file to be written
@@ -77,7 +77,7 @@ async fn write_cbz(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::R
     info!("creating file: {}", file.display());
     let file = File::create(file)?;
     let mut zip = ZipWriter::new(file);
-    let options = FileOptions::default();
+    let options = SimpleFileOptions::default();
 
     // Write files in turn
     for url in urls {
