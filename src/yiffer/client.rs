@@ -29,7 +29,7 @@ impl YifferClient {
 
     pub async fn comic_page(&self, name: &str) -> anyhow::Result<String> {
         let url = self.comic_url(name)?;
-        let c = ClientBuilder::rustls().connect(GECKODRIVER).await?;
+        let c = ClientBuilder::native().connect(GECKODRIVER).await?;
         c.goto(url.as_str()).await?;
 
         let title = Locator::Css("h1.loadedComicHeader");
