@@ -63,14 +63,12 @@ mod test {
         assert_eq!("Kissy Cousin", comic.name);
         assert_eq!("Kamicheetah", comic.artist);
 
-        let pages =
-            vec![Url::parse("https://static.yiffer.xyz/comics/Kissy Cousin/001.jpg").unwrap()];
-        assert_eq!(pages[0], comic.pages[0]);
+        let pages = Url::parse("https://static.yiffer.xyz/comics/Kissy Cousin/001.jpg").unwrap();
+        assert_eq!(pages, comic.pages[0]);
 
-        let pages =
-            vec![Url::parse("https://static.yiffer.xyz/comics/Kissy Cousin/042.jpg").unwrap()];
+        let pages = Url::parse("https://static.yiffer.xyz/comics/Kissy Cousin/042.jpg").unwrap();
 
-        assert_eq!(&pages[0], comic.pages.last().unwrap());
+        assert_eq!(&pages, comic.pages.last().unwrap());
 
         assert_eq!(42, comic.pages.len());
     }
