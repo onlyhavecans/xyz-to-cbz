@@ -10,7 +10,7 @@ anyhow = "1.0"
 clap = { version = "4.5", features = ["derive"] }
 env_logger = "0.11"
 fantoccini = "0.21"
-itertools = "0.13"
+itertools = "0.14"
 log = { version = "0.4", features = ["std"] }
 reqwest = "0.12"
 scraper = "0.22"
