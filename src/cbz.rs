@@ -5,8 +5,8 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::path::PathBuf;
 use url::Url;
-use zip::write::SimpleFileOptions;
 use zip::ZipWriter;
+use zip::write::SimpleFileOptions;
 
 /// Representation of a CBZ file to be written
 pub struct Cbz {
@@ -62,8 +62,8 @@ fn comic_file(base_dir: &str, name: &str, artist: &str) -> PathBuf {
 /// Get the filename part of a url.
 /// Panics if the url does not have path segments
 fn filename_from_url(url: &Url) -> String {
-    let segs = url.path_segments().unwrap();
-    let name = segs.last().unwrap();
+    let mut segs = url.path_segments().unwrap();
+    let name = segs.next_back().unwrap();
     name.into()
 }
 
