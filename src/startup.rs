@@ -1,5 +1,5 @@
-use crate::yiffer::{YifferClient, YifferComic};
 use crate::Cbz;
+use crate::yiffer::{YifferClient, YifferComic};
 use log::info;
 
 /// The bulk of run logic
