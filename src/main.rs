@@ -11,7 +11,7 @@ async fn main() {
     let comic = cli.comic;
 
     if let Err(e) = run(comic).await {
-        error!("application error: {}", e);
+        error!("application error: {e}");
         process::exit(1);
     }
 }

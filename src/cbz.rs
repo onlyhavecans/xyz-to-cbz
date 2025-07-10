@@ -86,7 +86,7 @@ async fn write_cbz(file: &PathBuf, urls: Vec<Url>, client: &Client) -> anyhow::R
         let res = client.get(url).send().await?;
         let bytes = res.bytes().await?;
 
-        info!("writing to zip: {}", filename);
+        info!("writing to zip: {filename}");
         zip.start_file(filename, options)?;
         zip.write_all(&bytes)?;
     }
