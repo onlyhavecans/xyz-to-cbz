@@ -60,6 +60,7 @@ mod test {
     }
 
     #[tokio::test]
+    #[ignore] // requires GECKODRIVER and firefix running
     async fn request_page() {
         let body = std::fs::read_to_string("test/Kissy Cousin - Yiffer.html").unwrap();
         let response = ResponseTemplate::new(200).set_body_raw(body, "text/html");

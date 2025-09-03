@@ -32,7 +32,9 @@ jobs:
       - name: fmt check
         run: cargo fmt --all --check
 
-      - name: Run clippy
+      - name: clippy
         run: cargo clippy -- -D warnings
 
-    ## test intentionally omitted for the moment as it requres firefox
+      - name: tests
+        run: cargo test
+
