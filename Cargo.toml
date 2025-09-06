@@ -16,7 +16,7 @@ reqwest = "0.12"
 scraper = "0.24"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 url = "2.5"
-zip = { version = "4", default-features = false, features = ["deflate"] }
+zip = { version = "5", default-features = false, features = ["deflate"] }
 
 [dev-dependencies]
 wiremock = "=0.6.5"
